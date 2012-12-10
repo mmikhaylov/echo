@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="echo">
+        <wb-resource deploy-path="/" source-path="/src/server-java/app-test"/>
+        <wb-resource deploy-path="/" source-path="/src/server-java/webcontainer-test"/>
+        <wb-resource deploy-path="/" source-path="/src/server-java/app"/>
+        <wb-resource deploy-path="/" source-path="/src/server-java/webcontainer"/>
+    </wb-module>
+</project-modules>

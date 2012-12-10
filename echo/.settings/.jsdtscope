@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src/client/example"/>
+	<classpathentry kind="src" path="src/client/corejs"/>
+	<classpathentry kind="src" path="src/server-java/webcontainer/nextapp/echo/webcontainer/resource"/>
+	<classpathentry kind="src" path="src/client/testapp-interactive"/>
+	<classpathentry kind="src" path="src/client/echo"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.WebProject">
+		<attributes>
+			<attribute name="hide" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.baseBrowserLibrary"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
