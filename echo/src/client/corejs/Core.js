@@ -7,7 +7,7 @@
  *  <li>Provides API for declaring JavaScript classes which includes support for
  *   specifying abstract and virtual properties and validating subtypes to such
  *   specification.</li>
- *  <li>Provides a "Method Wrapper" function (Core.method()) to create a function which will invoke 
+ *  <li>Provides a "Method Wrapper" function (Core.method()) to create a function which will invoke
  *    a member function of a specific object instance (enabling invocation with the "this pointer" set
  *    appropriately).</li>
  *  <li>Provides event/listener management framework.  Event-listeners which invoke
@@ -38,14 +38,14 @@ Core = {
             f.apply(this, arguments);
         };
     },
-    
+
     /**
      * Creates an empty function.
      */
     _createFunction: function() {
         return function() { };
     },
-    
+
     /**
      * Creates a new class, optionally extending an existing class.
      * This method may be called with one or two parameters as follows:
@@ -64,7 +64,7 @@ Core = {
      * <li>The <code>$static</code> property, an object, if provided, will have its properties installed as class variables.</li>
      * <li>The <code>$abstract</code> property, an object or <code>true</code>, if provided, will define methods that
      * must be implemented by derivative classes.  If the value is simply <code>true</code>, the object will be marked as
-     * abstract (such that it does not necessarily need to provide implementations of abstract methods defined in its 
+     * abstract (such that it does not necessarily need to provide implementations of abstract methods defined in its
      * base class.)</li>
      * <li>The <code>$virtual</code> property, an object, if provided, defines methods that will be placed into the prototype
      * that may be overridden by subclasses.  Attempting to override a property/method of the superclass that
@@ -79,9 +79,9 @@ Core = {
      * the same prototype, but the "prototype class" has an empty constructor.  When a class created with
      * this method is derived, the "prototype class" is used to create a prototype for the derivative.
      * <p>
-     * This method will return the constructor class, which contains an internal reference to the 
+     * This method will return the constructor class, which contains an internal reference to the
      * prototype class that will be used if the returned class is later derived by this method.
-     * 
+     *
      * @param {Function} baseClass the base class
      * @param {Object} definition an associative array containing methods and properties of the class
      * @return the constructor class
@@ -90,9 +90,9 @@ Core = {
         // Configure baseClass/definition arguments.
         var baseClass = arguments.length == 1 ? null : arguments[0];
         var definition = arguments.length == 1 ? arguments[0] : arguments[1];
-        
+
         var x, name;
-        
+
         // Perform argument error checking.
         if (arguments.length == 2) {
             if (typeof(baseClass) != "function") {
@@ -102,13 +102,13 @@ Core = {
         if (!definition) {
             throw new Error("Object definition not provided.");
         }
-        
+
         // Create the constructor class.
         var constructorClass;
         if (definition.$construct) {
             // Definition provides constructor, provided constructor function will be used as object.
             constructorClass = definition.$construct;
-            
+
             // Remove property such that it will not later be added to the object prototype.
             delete definition.$construct;
         } else {
@@ -125,10 +125,10 @@ Core = {
                 constructorClass = Core._createFunction();
             }
         }
-        
+
         // Create virtual property storage.
         constructorClass.$virtual = {};
-        
+
         // Store reference to base class in constructor class.
         constructorClass.$super = baseClass;
 
@@ -136,11 +136,11 @@ Core = {
             // Create class with empty constructor that shares prototype of base class.
             var prototypeClass = Core._createFunction();
             prototypeClass.prototype = baseClass.prototype;
-            
+
             // Create new instance of constructor-less prototype for use as prototype of new class.
             constructorClass.prototype = new prototypeClass();
         }
-        
+
         // Assign constructor correctly.
         constructorClass.prototype.constructor = constructorClass;
 
@@ -161,18 +161,18 @@ Core = {
                     constructorClass.$virtual[x] = true;
                 }
             }
-            
+
             // Remove property such that it will not later be added to the object prototype.
             delete definition.$abstract;
         }
-        
+
         // Copy virtual property flags from base class to shared prototype.
         if (baseClass) {
             for (name in baseClass.$virtual) {
                 constructorClass.$virtual[name] = baseClass.$virtual[name];
             }
         }
-        
+
         // Add virtual instance properties from definition to shared prototype.
         if (definition.$virtual) {
             Core._inherit(constructorClass.prototype, definition.$virtual, constructorClass.$virtual);
@@ -183,7 +183,7 @@ Core = {
             // Remove property such that it will not later be added to the object prototype.
             delete definition.$virtual;
         }
-        
+
         // Add toString and valueOf manually, as they will not be iterated
         // by for-in iteration in Internet Explorer.
         if (definition.hasOwnProperty("toString")) {
@@ -203,7 +203,7 @@ Core = {
             // (Mixins will only be added if they will NOT override an existing method.)
             var mixins = definition.$include.reverse();
             Core._processMixins(constructorClass, mixins);
-            
+
             // Remove property such that it will not later be added to the object prototype.
             delete definition.$include;
         }
@@ -216,7 +216,7 @@ Core = {
             // Remove property such that it will not later be added to the object prototype.
             delete definition.$load;
         }
-        
+
         // Process static properties and methods defined in the '$static' object.
         if (definition.$static) {
             Core._inherit(constructorClass, definition.$static);
@@ -227,25 +227,25 @@ Core = {
 
         // Process instance properties and methods.
         Core._inherit(constructorClass.prototype, definition, constructorClass.$virtual);
-        
+
         // If class is concrete, verify all abstract methods are provided.
         if (!constructorClass.$abstract) {
             this._verifyAbstractImpl(constructorClass);
         }
-        
+
         // Invoke static constructors.
         if (loadMethod) {
             // Invoke $load() function with "this" pointer set to class.
             loadMethod.call(constructorClass);
         }
-        
+
         return constructorClass;
     },
-    
+
     /**
      * Retrieves a value from an object hierarchy.
      *
-     * Examples: 
+     * Examples:
      * Given the following object 'o': <code>{ a: { b: 4, c: 2 }}</code>
      * <ul>
      * <li><code>Core.get(o, ["a", "b"]) will return <code>4</code>.</li>
@@ -270,7 +270,7 @@ Core = {
 
         return object;
     },
-    
+
     /**
      * Determines if the specified propertyName of the specified object is a virtual
      * property, i.e., that it can be overridden by subclasses.
@@ -281,10 +281,10 @@ Core = {
         case "valueOf":
             return true;
         }
-        
+
         return virtualProperties[propertyName];
     },
-    
+
     /**
      * Installs properties from source object into destination object.
      * <p>
@@ -308,7 +308,7 @@ Core = {
             }
         }
     },
-    
+
     /**
      * Creates a new function which executes a specific method of an object instance.
      * Any arguments passed to the returned function will be passed to the method.
@@ -328,19 +328,19 @@ Core = {
             return method.apply(instance, arguments);
         };
     },
-    
+
     /**
      * Add properties of mixin objects to destination object.
      * Mixins will be added in order, and any property which is already
      * present in the destination object will not be overridden.
      *
      * @param destination the destination object
-     * @param {Array} mixins the mixin objects to add 
+     * @param {Array} mixins the mixin objects to add
      */
     _processMixins: function(destination, mixins) {
         for (var i = 0; i < mixins.length; ++i) {
             for (var mixinProperty in mixins[i]) {
-                if (destination.prototype[mixinProperty]) { 
+                if (destination.prototype[mixinProperty]) {
                     // Ignore mixin properties that already exist.
                     continue;
                 }
@@ -348,18 +348,18 @@ Core = {
             }
         }
     },
-    
+
     /**
      * Sets a value in an object hierarchy.
      *
-     * Examples: 
+     * Examples:
      * Given the following object 'o': <code>{ a: { b: 4, c: 2 } }</code>
      * <ul>
      * <li><code>Core.set(o, ["a", "b"], 5)</code> will update the value of 'o' to be: <code>{ a: { b: 5, c: 2 } }</code></li>
      * <li><code>Core.set(o, ["a", "d"], 7)</code> will update the value of 'o' to be:
      * <code>{ a: { b: 4, c: 2, d: 7 } }</code></li>
      * <li><code>Core.set(o, ["e"], 9)</code> will update the value of 'o' to be: <code>{ a: { b: 4, c: 2 }, e: 9 }</code></li>
-     * <li><code>Core.set(o, ["f", "g"], 8)</code> will update the value of 'o' to be: 
+     * <li><code>Core.set(o, ["f", "g"], 8)</code> will update the value of 'o' to be:
      * <code>{ a: { b: 4, c: 2 }, f: { g: 8 } }</code></li>
      * <li><code>Core.set(o, ["a"], 10)</code> will update the value of 'o' to be: <code>{ a: 10 }</code></li>
      * </ul>
@@ -370,25 +370,26 @@ Core = {
      */
     set: function(object, path, value) {
         var parentObject = null;
-        
+
         // Find or create container object.
         for (var i = 0; i < path.length - 1; ++i) {
-            parentObject = object; 
+            parentObject = object;
             object = object[path[i]];
             if (!object) {
                 object = {};
                 parentObject[path[i]] = object;
             }
         }
-        
+
         // Assign value.
         object[path[path.length - 1]] = value;
     },
-    
+
     /**
      * Verifies that a concrete derivative of an abstract class implements
      * abstract properties present in the base class.
      *
+     * @memberOf Core
      * @param constructorClass the class to verify
      */
     _verifyAbstractImpl: function(constructorClass) {
@@ -396,7 +397,7 @@ Core = {
          if (!baseClass || !baseClass.$abstract || baseClass.$abstract === true) {
              return;
          }
-         
+
          for (var x in baseClass.$abstract) {
              if (constructorClass.prototype[x] == null) {
                  throw new Error("Concrete class does not provide implementation of abstract method \"" + x + "\".");
@@ -407,26 +408,27 @@ Core = {
 
 /**
  * Namespace for debugging related utilities.
- * @class
+ * @namespace
  */
-Core.Debug = { 
+Core.Debug = {
 
     /**
      * The DOM element to which console output should be written.
      * @type HTMLElement
+     * @memberOf Core.Debug
      */
     consoleElement: null,
-    
+
     /**
     * Flag indicating whether console output should be displayed as alerts.
     * Enabling is generally not recommended.
     * @type Boolean
     */
     useAlertDialog: false,
-    
+
     /**
      * Writes a message to the debug console.
-     * 
+     *
      * @param {String} text the message
      */
     consoleWrite: function(text) {
@@ -442,7 +444,7 @@ Core.Debug = {
             alert("DEBUG:" + text);
         }
     },
-    
+
     /**
      * Creates a string representation of the state of an object's instance variables.
      *
@@ -453,7 +455,7 @@ Core.Debug = {
     toString: function(object) {
         var s = "";
         for (var x in object) {
-            if (typeof object[x] != "function") { 
+            if (typeof object[x] != "function") {
                 s += x + ":" + object[x] + "\n";
             }
         }
@@ -463,6 +465,7 @@ Core.Debug = {
 
 /**
  * Arrays namespace.
+ * @namespace
  */
 Core.Arrays = {
 
@@ -503,9 +506,10 @@ Core.Arrays = {
     },
 
     /**
-     * Returns the index of the specified item within the array, or -1 if it 
-     * is not contained in the array.  
-     * 
+     * Returns the index of the specified item within the array, or -1 if it
+     * is not contained in the array.
+     *
+     * @memberOf Core.Arrays
      * @param item the item
      * @return the index of the item, or -1 if it is not present in the array
      * @type Number
@@ -518,12 +522,12 @@ Core.Arrays = {
         }
         return -1;
     },
-    
+
     /**
      * Removes the first instance of the specified item from an array.
      * If the item does not exist in the array, no action is taken.
      * Equality is determined using the '==' operator.
-     * 
+     *
      * @param array the array from which the item should be removed
      * @param item the item to remove
      */
@@ -535,11 +539,11 @@ Core.Arrays = {
             }
         }
     },
-    
+
     /**
      * Removes duplicate items from an array.
      * Items retained in the array may not appear in the previous order.
-     * 
+     *
      * @param array the array from which duplicates are to be removed.
      */
     removeDuplicates: function(array) {
@@ -551,12 +555,12 @@ Core.Arrays = {
             if (array[i] == array[i - 1]) {
                 // If duplicate, copy last element in array over current element.
                 array[i] = array[array.length - 1 - removeCount];
-                
+
                 // Increment removeCount (indicating how much the length of the array should be decremented)
                 ++removeCount;
             }
         }
-        
+
         if (removeCount > 0) {
             array.length = array.length - removeCount;
         }
@@ -569,43 +573,48 @@ Core.Arrays = {
  * platforms, i.e., Internet Explorer 6.
  * Null values are not permitted as keys.  Setting a key to a null value
  * will result in the key being removed.
+ *
  */
-Core.Arrays.LargeMap = Core.extend({
-    
+Core.Arrays.LargeMap = Core.extend(
+	/** @lends Core.Arrays.LargeMap.prototype */
+	{
+
     $static: {
-    
-        /** 
+
+        /**
          * Flag indicating whether forced garbage collection should be enabled.
          * This flag should be manually set in environments where it is required.
          * (The web module does this automatically for IE6.)
          */
         garbageCollectEnabled: false
     },
-    
+
     /**
      * Number of removes since last associative array re-creation.
+     *
      * @type Number
      */
     _removeCount: 0,
-    
+
     /**
      * Number (integer) of removes between associative array re-creation.
      * @type Number
      */
     garbageCollectionInterval: 250,
-    
+
     /**
      * Associative mapping.
      */
-    map: null, 
-    
+    map: null,
+
     /**
      * Creates a new LargeMap.
+     * @constructs
      */
     $construct: function() {
         this.map = {};
     },
-    
+
     /**
      * Performs 'garbage-collection' operations, recreating the array.
      * This operation is necessary due to Internet Explorer memory leak
@@ -619,10 +628,10 @@ Core.Arrays.LargeMap = Core.extend({
         }
         this.map = newMap;
     },
-    
+
     /**
      * Removes the value referenced by the specified key.
-     *
+     * @memberOf Core.Arrays.LargeMap
      * @param key the key
      */
     remove: function(key) {
@@ -634,10 +643,10 @@ Core.Arrays.LargeMap = Core.extend({
             }
         }
     },
-    
+
     /**
      * Returns a string representation, for debugging purposes only.
-     * 
+     *
      * @return a string representation of the map
      * @type String
      */
@@ -653,16 +662,16 @@ Core.Arrays.LargeMap = Core.extend({
 Core.ListenerList = Core.extend({
 
     /**
-     * Array containing event types and event listeners.  
+     * Array containing event types and event listeners.
      * Even indexes contain event types, and the subsequent odd
      * index contain Functions to invoke.
      * @type Array
      */
     _data: null,
-   
+
     /**
      * Creates a new listener list.
-     * 
+     *
      * @constructor
      */
     $construct: function() {
@@ -671,20 +680,20 @@ Core.ListenerList = Core.extend({
 
     /**
      * Adds an event listener.
-     * 
+     *
      * @param {String} eventType the event type
      * @param {Function} eventTarget the event target
      */
     addListener: function(eventType, eventTarget) {
         this._data.push(eventType, eventTarget);
     },
-    
+
     /**
      * Fires an event.
-     * 
+     *
      * @param event the event to fire
-     * @return true if all event listeners returned values that evaluate to true, 
-     *         or false if any event listeners returned values that evaluate to 
+     * @return true if all event listeners returned values that evaluate to true,
+     *         or false if any event listeners returned values that evaluate to
      *         false
      * @type Boolean
      */
@@ -692,25 +701,25 @@ Core.ListenerList = Core.extend({
         if (event.type == null) {
             throw new Error("Cannot fire event, type property not set.");
         }
-        
+
         var i, returnValue = true, listeners = [];
-        
+
         for (i = 0; i < this._data.length; i += 2) {
             if (this._data[i] == event.type) {
                 listeners.push(this._data[i + 1]);
             }
         }
-        
+
         for (i = 0; i < listeners.length; ++i) {
-            returnValue = listeners[i](event) && returnValue; 
+            returnValue = listeners[i](event) && returnValue;
         }
         return returnValue;
     },
-    
+
     /**
      * Returns an array containing the types of all listeners
      * in the list.
-     * 
+     *
      * @return the event types
      * @type Array
      */
@@ -722,10 +731,10 @@ Core.ListenerList = Core.extend({
         Core.Arrays.removeDuplicates(types);
         return types;
     },
-    
+
     /**
      * Returns an array of all listeners for a specific event type.
-     * 
+     *
      * @param {String} eventType the event type
      * @return the listeners
      * @type Array
@@ -739,10 +748,10 @@ Core.ListenerList = Core.extend({
         }
         return listeners;
     },
-    
+
     /**
      * Determines the number of listeners for a specific event type.
-     * 
+     *
      * @param {String} eventType the event type
      * @return the listener count
      * @type Number
@@ -756,10 +765,10 @@ Core.ListenerList = Core.extend({
         }
         return count;
     },
-    
+
     /**
      * Determines if the listeners list has any listeners of a specific type.
-     * 
+     *
      * @param {String} eventType the event type
      * @return true if any listeners exist
      * @type Boolean
@@ -772,27 +781,27 @@ Core.ListenerList = Core.extend({
         }
         return false;
     },
-    
+
     /**
      * Determines if any number of listeners are registered to the list.
-     * 
+     *
      * @return true if the listener list is empty
      * @type Boolean
      */
     isEmpty: function() {
         return this._data.length === 0;
     },
-    
+
     /**
      * Removes an event listener.
-     * 
+     *
      * CAUTION: If you are unregistering an event listener created with Core.method(), please see the documentation for
      * Core.method() and note that a new closure-wrapped method is returned each time Core.method() is invoked.
      * Thus calling removeListener(Core.method(this, this,_someListener)) will NOT remove an existing listener.
      * The solution to this issue is to retain a reference to Core.method() wrapped listeners within the object
      * that will register and unregister them.
-     * 
-     * 
+     *
+     *
      * @param {String} eventType the event type
      * @param {Function} eventTarget the event target
      */
@@ -805,7 +814,7 @@ Core.ListenerList = Core.extend({
             }
         }
     },
-    
+
     /** @see Object#toString */
     toString: function() {
         var out = "";
@@ -829,7 +838,7 @@ Core.ListenerList = Core.extend({
 Core.ResourceBundle = Core.extend({
 
     $static: {
-    
+
         /**
          * Generates a less specific version of the specified language code.
          * Returns null if no "parent" language code can be determined.
@@ -840,7 +849,7 @@ Core.ResourceBundle = Core.extend({
          * @param {String} languageCode an RFC 1766 language code
          * @return a less specific version of the specified language code,
          *         or null if none can be determined
-         * @type String 
+         * @type String
          */
         getParentLanguageCode: function(languageCode) {
             if (languageCode.indexOf("-") == -1) {
@@ -857,14 +866,14 @@ Core.ResourceBundle = Core.extend({
      * The contents of these maps may not be modified.
      */
     _sourceMaps: null,
-    
+
     /**
      * Cache of generated resource maps which fill omissions in more-specific resource maps
      * with those from less-specific resource maps.  A generated map is returned
      * when the user requests a locale-specific map.
      */
     _generatedMaps: null,
-    
+
     /**
      * The default resource map that should be used in the event that a
      * locale-specific map is not available for a particular language code.
@@ -873,7 +882,7 @@ Core.ResourceBundle = Core.extend({
 
     /**
      * Creates a new <code>ResourceBundle</code>.
-     * 
+     *
      * @param defaultMap the default resource map
      */
     $construct: function(defaultMap) {
@@ -881,11 +890,11 @@ Core.ResourceBundle = Core.extend({
         this._generatedMaps = {};
         this._defaultMap = defaultMap;
     },
-    
+
     /**
      * Returns a locale-specific resource map.  The returned map will contain entries from less-specific and/or the default map
-     * if they are not available from the map for the specified language code. 
-     * 
+     * if they are not available from the map for the specified language code.
+     *
      * @param {String} languageCode an RFC 1766 language code, or null to return the default map
      * @return a locale-specific map for the language code
      */
@@ -894,7 +903,7 @@ Core.ResourceBundle = Core.extend({
         if (map) {
             return map;
         }
-    
+
         map = {};
         var x;
 
@@ -925,14 +934,14 @@ Core.ResourceBundle = Core.extend({
                 map[x] = this._defaultMap[x];
             }
         }
-        
+
         this._generatedMaps[languageCode] = map;
         return map;
     },
 
     /**
      * Adds a new locale-specific map to the bundle.
-     * 
+     *
      *  @param languageCode the language code
      *  @param map the key-value resource map for the language code
      */
@@ -940,7 +949,7 @@ Core.ResourceBundle = Core.extend({
         this._generatedMaps = {};
         this._sourceMaps[languageCode] = map;
     },
-    
+
     /** @see Object#toString */
     toString: function() {
         var out = "ResourceBundle: ";

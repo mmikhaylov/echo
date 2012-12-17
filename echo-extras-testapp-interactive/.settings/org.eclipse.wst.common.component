@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="echo-extras-testapp-interactive">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="echo-extras.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/echo-extras/echo-extras">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="echo.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/echo/echo">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="echo-extras-testapp-interactive"/>
+        <property name="java-output-path" value="/echo-extras-testapp-interactive/bin"/>
+    </wb-module>
+</project-modules>
